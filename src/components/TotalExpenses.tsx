@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Fonts } from '../constants/fonts';
 import { ms, s } from '../utils/scale';
 import Animated, {
@@ -7,12 +7,18 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useAppSelector } from '../store';
 
 const TotalExpenses = () => {
+  const { data } = useAppSelector(store => store.expense);
+  const total = useMemo(() => {
+    return data.reduce((sum, item) => sum + item.amount, 0);
+  }, [data]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Total Expenses</Text>
-      <AnimatedNumber number={500} key={'animatedNumber'} />
+      <AnimatedNumber number={total} key={'animatedNumber'} />
     </View>
   );
 };
@@ -40,7 +46,7 @@ export function AnimatedNumber({
     const formator = (num: number) =>
       new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'INR',
         maximumFractionDigits: 2,
       }).format(num);
 

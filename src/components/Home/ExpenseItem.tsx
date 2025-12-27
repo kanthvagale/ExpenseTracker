@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { ExpenseitemProps } from '../../constants/types';
 import { ms, s } from '../../utils/scale';
@@ -13,6 +13,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/Index';
+import { useAppDispatch } from '../../store';
+import { deleteExpense } from '../../store/slices/expenseSlice';
 
 const SNAP_TRANSLATE_X = s(130 + 12);
 const THRESHOLD_X = SNAP_TRANSLATE_X / 2;
@@ -32,16 +37,25 @@ const selectLogo = (category: string) => {
   }
 };
 
+type ExpenseItemNavigationProps = NativeStackNavigationProp<
+  RootStackParamList,
+  'home'
+>;
+
 const ExpenseItem = ({
   type,
   date,
   amount,
   category,
   expenseTitle,
+  id,
+  notes,
 }: // index,
-ExpenseitemProps & { index: number }) => {
+ExpenseitemProps) => {
   const translateValue = useSharedValue(0);
   const onLeft = useSharedValue(false);
+  const navigation = useNavigation<ExpenseItemNavigationProps>();
+  const dispatch = useAppDispatch();
 
   const panGesture = Gesture.Pan()
     .activeOffsetX([-10, 10])
@@ -88,7 +102,9 @@ ExpenseitemProps & { index: number }) => {
             <View style={styles.subDetails}>
               <Text style={styles.date}>{category}</Text>
               <View style={styles.dot} />
-              <Text style={styles.date}>{moment(date).format('h:mm A')}</Text>
+              <Text style={styles.date}>
+                {moment(parseInt(date, 10) * 1000).format('h:mm A')}
+              </Text>
             </View>
           </View>
 
@@ -98,13 +114,33 @@ ExpenseitemProps & { index: number }) => {
       </GestureDetector>
 
       <View style={styles.options}>
-        <View style={styles.edit}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.edit}
+          onPress={() => {
+            navigation.navigate('addEditExpense', {
+              type: 'Edit',
+              amount: amount,
+              category: category,
+              date: date,
+              expenseTitle: expenseTitle,
+              id: id,
+              notes: notes,
+            });
+          }}
+        >
           <Icons.EditIcon width={24} height={24} />
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.delete}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => {
+            dispatch(deleteExpense(id));
+          }}
+          style={styles.delete}
+        >
           <Icons.DeleteIcon width={24} height={24} />
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -113,7 +149,9 @@ ExpenseitemProps & { index: number }) => {
 const StickyHeader = ({ date }: { date: string }) => {
   return (
     <View style={styles.stickyHeader}>
-      <Text style={styles.stickyHeaderTxt}>{date}</Text>
+      <Text style={styles.stickyHeaderTxt}>
+        {moment(parseInt(date, 10) * 1000).format('MMM Do YYYY')}
+      </Text>
     </View>
   );
 };
@@ -121,8 +159,7 @@ const StickyHeader = ({ date }: { date: string }) => {
 export default ExpenseItem;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-  },
+  mainContainer: {},
   container: {
     padding: s(16),
     backgroundColor: '#FFF',

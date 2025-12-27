@@ -3,11 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from '../screens/SplashScreen';
 import Home from '../screens/Home';
 import AddEditExpense from '../screens/AddEditExpense';
+import { AddEditExpenseParams } from '../constants/types';
 
 export type RootStackParamList = {
   splashscreen: undefined;
   home: undefined;
-  addEditExpense: undefined;
+  addEditExpense: AddEditExpenseParams;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

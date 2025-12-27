@@ -6,6 +6,8 @@ import OthersIcon from './others.svg';
 import PlusIcon from './plus.svg';
 import ShoppingIcon from './shopping.svg';
 import TransportIcon from './transport.svg';
+import BackIcon from './back.svg';
+import CalendarIcon from './calendar.svg';
 
 export const Icons = {
   BillIcon,
@@ -16,6 +18,8 @@ export const Icons = {
   PlusIcon,
   ShoppingIcon,
   TransportIcon,
+  BackIcon,
+  CalendarIcon,
 };
 
 export type IconName = keyof typeof Icons;

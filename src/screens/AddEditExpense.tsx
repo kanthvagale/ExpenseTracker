@@ -87,7 +87,7 @@ const AddEditExpense = () => {
       dispatch(
         addExpense({
           id: (Math.random() * 1000000).toString(),
-          amount: parseInt(amount, 10),
+          amount: parseFloat(amount),
           category: categoryValue,
           date: moment(date).unix().toString(),
           expenseTitle: title,
@@ -100,7 +100,7 @@ const AddEditExpense = () => {
         editExpense({
           id: params.id,
           changes: {
-            amount: parseInt(amount, 10),
+            amount: parseFloat(amount),
             category: categoryValue,
             date: moment(date).unix().toString(),
             expenseTitle: title,
